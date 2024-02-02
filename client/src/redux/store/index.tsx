@@ -1,5 +1,3 @@
-// Path: ./src/redux/store/index.tsx
-
 import { configureStore } from "@reduxjs/toolkit";
 import UserReducer from "../reducers/UserReducer";
 

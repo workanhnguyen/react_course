@@ -86,6 +86,9 @@ export const userSlice = createSlice({
     addNewUser: (state, action) => {
       const updatedUserList = [ ...state.users, action.payload ]; // --> 3 users
       state.users = updatedUserList;
+      state.savedUser = null;
+      state.loadingSaveUser = false;
+      state.errorSaveUser = null;
     },
     updateUser: (state, action) => {
       const updatedUserList = state.users.map((user) => {
