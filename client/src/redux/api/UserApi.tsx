@@ -2,9 +2,9 @@ import { User } from "../../interfaces";
 import AxiosClient from "./AxiosClient";
 
 const UserApi = {
-	getUsers: (email?: string) => {
+	getUsers: (email: string) => {
 		// http://localhost:9090/api/v1/users?email=user@example.com
-		return AxiosClient.get(`/users${email !== null && `?email=${email}`}`);
+		return AxiosClient.get(`/users${email !== '' ? `?email=${email}` : ''}`);
 	},
 	saveUser: (user: User) => {
 		return AxiosClient.post("/users/new", {
