@@ -2,9 +2,12 @@ import { User } from "../../interfaces";
 import AxiosClient from "./AxiosClient";
 
 const UserApi = {
-	getUsers: (email: string) => {
+	getUsers: () => {
+		return AxiosClient.get(`/users`);
+	},
+	getUserByEmail: (email: string) => {
 		// http://localhost:9090/api/v1/users?email=user@example.com
-		return AxiosClient.get(`/users${email !== '' ? `?email=${email}` : ''}`);
+		return AxiosClient.get(`/users?email=${email}`);
 	},
 	saveUser: (user: User) => {
 		return AxiosClient.post("/users/new", {
@@ -14,14 +17,14 @@ const UserApi = {
 		});
 	},
 	editUser: (user: User) => {
-		return AxiosClient.post("/users/edit", {
+		return AxiosClient.patch("/users/edit", {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
 		});
 	},
 	deleteUser: (email: string) => {
-		return AxiosClient.delete("/users/delete", { data: email });
+		return AxiosClient.delete("/users/delete", { data: { email } });
 	},
 };
 

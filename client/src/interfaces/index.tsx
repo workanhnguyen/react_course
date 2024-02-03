@@ -11,6 +11,11 @@ export interface UserState {
   users: User[];
   errorGetUsers: any;
 
+  // Use for fetching user by email
+  loadingGetUserByEmail: boolean;
+  userByEmail: User | null;
+  errorGetUserByEmail: any;
+
   // Use for saving or editing user
   loadingSaveUser: boolean;
   savedUser: User | null;

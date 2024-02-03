@@ -16,12 +16,12 @@ axiosClient.interceptors.request.use(
 		config.headers.Authorization = `Bearer ${token}`;
 		return config;
 	},
-	(error) => {},
+	(error) => Promise.reject(error),
 );
 
 axiosClient.interceptors.response.use(
 	async (response) => { return response; },
-	async (error) => {},
+	async (error) => Promise.reject(error),
 );
 
 export default axiosClient;
