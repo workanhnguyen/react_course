@@ -4,11 +4,17 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User, UserState } from "../../interfaces";
 import UserApi from "../api/UserApi";
 
-const initialState: UserState = { // initialState === state
+const initialState: UserState = {
+  // initialState === state
   // Use for fetching users
   loadingGetUsers: false,
   users: [],
   errorGetUsers: null,
+
+  // Use for fetching user by email
+  loadingGetUserByEmail: false,
+  userByEmail: null,
+  errorGetUserByEmail: null,
 
   // Use for saving or editing user
   loadingSaveUser: false,
@@ -23,9 +29,22 @@ const initialState: UserState = { // initialState === state
 
 export const getUsersThunk = createAsyncThunk(
   "getUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      return (await UserApi.getUsers()).data;
+    } catch (error: any) {
+      if (error.response && error.response.data.message)
+        return rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getUserByEmailThunk = createAsyncThunk(
+  "getUserByEmail",
   async (email: string, { rejectWithValue }) => {
     try {
-      return (await UserApi.getUsers(email)).data;
+      return (await UserApi.getUserByEmail(email)).data;
     } catch (error: any) {
       if (error.response && error.response.data.message)
         return rejectWithValue(error.response.data.message);
@@ -66,7 +85,8 @@ export const deleteUserThunk = createAsyncThunk(
     try {
       return (await UserApi.deleteUser(email)).data; // <=> action
     } catch (error: any) {
-      if (error.response && error.response.data.message) // <=> action
+      if (error.response && error.response.data.message)
+        // <=> action
         return rejectWithValue(error.response.data.message);
       return rejectWithValue(error.message);
     }
@@ -82,9 +102,10 @@ export const userSlice = createSlice({
   // Them 1: 2 + 1 = 3 users
   // Cach 1: goi lai API getUsers() --> loading
   // Cach 2: addNewUser() -> ko load
-  reducers: { // Xu ly dong bo | <=> actions
+  reducers: {
+    // Xu ly dong bo | <=> actions
     addNewUser: (state, action) => {
-      const updatedUserList = [ ...state.users, action.payload ]; // --> 3 users
+      const updatedUserList = [...state.users, action.payload]; // --> 3 users
       state.users = updatedUserList;
       state.savedUser = null;
       state.loadingSaveUser = false;
@@ -105,7 +126,8 @@ export const userSlice = createSlice({
     },
   },
 
-  extraReducers: (builder) => { // Xu ly bat dong bo
+  extraReducers: (builder) => {
+    // Xu ly bat dong bo
     // Fetching users
     builder.addCase(getUsersThunk.pending, (state) => {
       state.loadingGetUsers = true;
@@ -121,6 +143,24 @@ export const userSlice = createSlice({
       state.loadingGetUsers = false;
       state.users = [];
       state.errorGetUsers =
+        action.payload !== undefined ? action.payload : null;
+    });
+
+    // Fetching user by email
+    builder.addCase(getUserByEmailThunk.pending, (state) => {
+      state.loadingGetUserByEmail = true;
+      state.userByEmail = null;
+      state.errorGetUserByEmail = null;
+    });
+    builder.addCase(getUserByEmailThunk.fulfilled, (state, action) => {
+      state.loadingGetUserByEmail = false;
+      state.userByEmail = action.payload[0];
+      state.errorGetUserByEmail = null;
+    });
+    builder.addCase(getUserByEmailThunk.rejected, (state, action) => {
+      state.loadingGetUserByEmail = false;
+      state.userByEmail = null;
+      state.errorGetUserByEmail =
         action.payload !== undefined ? action.payload : null;
     });
 

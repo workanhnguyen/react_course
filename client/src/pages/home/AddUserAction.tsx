@@ -12,7 +12,7 @@ import PopupForm from "../../components/popup-form";
 
 const AddUserAction = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loadingSaveUser, savedUser, errorSaveUser } = useSelector(
+  const { loadingSaveUser, savedUser } = useSelector(
     (state: RootState) => state.user
   );
 
@@ -31,7 +31,7 @@ const AddUserAction = () => {
   type UserInfo = z.infer<typeof userSchema>;
 
   //   React hook form
-  const { register, handleSubmit, formState } = useForm<UserInfo>({
+  const { register, handleSubmit, formState, reset } = useForm<UserInfo>({
     resolver: zodResolver(userSchema),
     mode: "onChange",
   });
@@ -45,9 +45,10 @@ const AddUserAction = () => {
   useEffect(() => {
     if (savedUser !== null) {
       dispatch(addNewUser(savedUser));
+      reset();
       handleClose();
     }
-  }, [dispatch, loadingSaveUser, savedUser, errorSaveUser]);
+  }, [dispatch, savedUser, reset]);
 
   return (
     <>
